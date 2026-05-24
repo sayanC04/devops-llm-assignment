@@ -26,6 +26,10 @@ The infrastructure is fully deployed on AWS using Terraform. Network hygiene is 
   |  (curl / JSON)   +----(80)----+->+  [Nginx Gateway Instance] (Reverse Proxy) |  |
   |                  |            |  |      | proxy_pass http://caller:3111      |  |
   +------------------+            |  |      v                                    |  |
+                                  |  |                                           |  |
+                                  |  |  [NAT Instance] (t3.micro)                |  |
+                                  |  |   - Routes outbound internet traffic      |  |
+                                  |  |     for private subnets (Docker/GGUF)     |  |
                                   |  +-------------------------------------------+  |
                                   |                                                 |
                                   |  +-------------------------------------------+  |
