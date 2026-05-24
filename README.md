@@ -16,39 +16,7 @@ This architecture decouples the API tier from the Heavy-Compute Inference tier u
 
 The infrastructure is fully deployed on AWS using Terraform. Network hygiene is strictly enforced: workers sit in isolated private subnets and cannot be accessed directly from the public internet.
 
-```text
-                                  +-------------------------------------------------+
-                                  |  AWS VPC (10.0.0.0/16)                          |
-                                  |                                                 |
-  +------------------+            |  +-------------------------------------------+  |
-  |                  |            |  | Public Subnet (10.0.1.0/24)               |  |
-  |  Public Internet |    HTTP    |  |                                           |  |
-  |  (curl / JSON)   +----(80)----+->+  [Nginx Gateway Instance] (Reverse Proxy) |  |
-  |                  |            |  |      | proxy_pass http://caller:3111      |  |
-  +------------------+            |  |      v                                    |  |
-                                  |  |                                           |  |
-                                  |  |  [NAT Instance] (t3.micro)                |  |
-                                  |  |   - Routes outbound internet traffic      |  |
-                                  |  |     for private subnets (Docker/GGUF)     |  |
-                                  |  +-------------------------------------------+  |
-                                  |                                                 |
-                                  |  +-------------------------------------------+  |
-                                  |  | Private Subnet 1 (10.0.2.0/24)            |  |
-                                  |  |                                           |  |
-                                  |  |  [Caller Worker Instance]                 |  |
-                                  |  |   - iii-engine (Ports 3111, 49134)        |  |
-                                  |  |   - caller-worker (TypeScript API)        |  |
-                                  |  |      ^                                    |  |
-                                  |  +------|------------------------------------+  |
-                                  |         | RPC / WebSocket (Port 49134)          |
-                                  |  +------|------------------------------------+  |
-                                  |  | Private Subnet 2 (10.0.3.0/24)            |  |
-                                  |  |      v                                    |  |
-                                  |  |  [Inference Worker Instance]              |  |
-                                  |  |   - inference-worker (Python + Gemma)     |  |
-                                  |  +-------------------------------------------+  |
-                                  +-------------------------------------------------+
-```
+![Architecture Diagram](architecture.png)
 
 ### 🧩 Components
 
